@@ -9,7 +9,7 @@ This class was developed to process documents that litigants produce only in PDF
 
 For example, you can sort by the y-coordinate of the text, and then delete all text on the top 1 inch of the page (if every page has a header that you want to get rid of).  You can use the x-coordinate to determine which column the data goes into.  You can use the y-coordinates (along with the page number) to determine whether two words are on the same line.  With that information, you can try to build a spreadsheet manually, or you could use a Java program to parse the .csv file.
 
-michael@levycivilrights.com
+github@levycivilrights.com
 
 
 
