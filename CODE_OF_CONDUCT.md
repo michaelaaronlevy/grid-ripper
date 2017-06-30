@@ -4,6 +4,8 @@
 
 In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
+MAINTAIN CONFIDENTIALITY of your information.  GridRipper is intended for use related to litigation, which can involve confidential documents.  Do not share confidential information, for example if you are seeking help with the project, do not post confidential data that is part of the program's output.
+
 ## Our Standards
 
 Examples of behavior that contributes to creating a positive environment include:
