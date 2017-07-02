@@ -1,3 +1,26 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.TextPosition;
+
+/* 
+ * TODO: should I create a data model of every page, and then author the page at the
+ * END that way, I could take some time to do things like merge entries that belong
+ * together which realy ought to be done in the default class.
+ */
+
 /**
  * Extension of PDFTextStripper to output the words along with their respective
  * coordinates on the page. This is useful for converting PDFs into Excel
@@ -46,7 +69,7 @@ public class TextStripperCoordinates extends PDFTextStripper
          }
          final JFileChooser jfc = new JFileChooser();
          jfc.setDialogType(JFileChooser.SAVE_DIALOG);
-         jfc.setDialogTitle("Select Output File");
+         jfc.setDialogTitle("Select Output File - remember to add .csv to end of file name");
          int selection;
          
          while(jfc.getSelectedFile() == null || jfc.getSelectedFile().isDirectory())
@@ -114,6 +137,7 @@ public class TextStripperCoordinates extends PDFTextStripper
    public TextStripperCoordinates(final int mode) throws IOException
    {
       super();
+      totalPageNo = 0;
       setSortByPosition(true);
       setMode(mode);
       currentFileName = "";
@@ -138,6 +162,8 @@ public class TextStripperCoordinates extends PDFTextStripper
    public void writeManyFiles(final List<File> input, final File output, final boolean includePath) throws IOException
    {
       final BufferedWriter b = new BufferedWriter(new FileWriter(output));
+      b.write(_COLUMN_NAMES);
+      b.newLine();
       for(final File in : input)
       {
          currentFileName = includePath ? in.getPath() : in.getName();
@@ -150,12 +176,23 @@ public class TextStripperCoordinates extends PDFTextStripper
    
    protected void writePrefix() throws IOException
    {
-      output.write(counter++ + ",");
-      if(currentFileName != null && currentFileName.length() > 0)
+      if(printPermissions[0])
+      {
+         output.write(counter + ",");
+      }
+      counter++;
+      if(printPermissions[1] && currentFileName != null && currentFileName.length() > 0)
       {
          output.write(currentFileName + ",");
       }
-      output.write(getCurrentPageNo() + ",");
+      if(printPermissions[2])
+      {
+         output.write(getCurrentPageNo() + ",");
+      }
+      if(printPermissions[3])
+      {
+         output.write(totalPageNo + ",");
+      }
    }
    
    protected void setCoordinates(final TextPosition tp)
@@ -195,7 +232,7 @@ public class TextStripperCoordinates extends PDFTextStripper
    {
       for(int i = 0; i < values.length; i++)
       {
-         if(printPermissions[i])
+         if(printPermissions[i + 4])
          {
             output.write(values[i] + ",");
          }
@@ -368,6 +405,11 @@ public class TextStripperCoordinates extends PDFTextStripper
       }
    }
    
+   protected void writePageStart()
+   {
+      totalPageNo++;
+   }
+   
    public int getMode()
    {
       return mode;
@@ -405,14 +447,16 @@ public class TextStripperCoordinates extends PDFTextStripper
    protected String currentFileName;
    protected String csvNewline;
    protected long counter = 1;
+   protected long totalPageNo;
    
    protected int mode;
    protected float[] values = new float[5];
    
    /**
     * change these values to disable printing certain columns.
+    * 
     */
-   public final boolean[] printPermissions = new boolean[] { true, true, true, true, true, true, true, true };
+   public final boolean[] printPermissions = new boolean[] { true, true, true, true, true, true, true, true, true };
    
    protected float separateWords = _DEFAULT_SEPARATE_WORDS;
    
@@ -448,4 +492,6 @@ public class TextStripperCoordinates extends PDFTextStripper
     * characters, in FIXED mode the words will be broken into separate rows
     */
    public static final float _DEFAULT_SEPARATE_WORDS = 2.0f;
+   
+   public static final String _COLUMN_NAMES = "row_id,file_name,pdf_page,total_page,y_start,x_start,x_end,font_size,rotation,content";
 }
